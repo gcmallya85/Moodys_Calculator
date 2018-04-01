@@ -1,0 +1,64 @@
+<h1>Moody's Friction Factor Calculator</h1>
+<form name="friction_factor" style="background-color:#E6E6FA"><script type="text/javascript"> 
+	function calculate_f(){
+		var Re   = Number(document.friction_factor.ReynoldsNum.value); //Reynolds number
+		var RR = Number(document.friction_factor.RR.value); //Relative roughness
+		document.friction_factor.ff.value=friction_factor_moody(Re,RR); //Call JS function to calculate friction factor using Colebrook Equation
+function friction_factor_moody(R, K) {
+	  if (R <= 2300) {
+		return 64 / R;
+	  } else if (R <= 4000) {
+		return "Transition";
+	  } else {
+		f_guess = 0.02;
+		f_final = 0.01;
+		iter = 0;
+		while (iter < 100) {
+		  if (f_final.toFixed(4) != f_guess.toFixed(4)) {
+			f_guess = f_final;
+			A = -2 * Math.log10((K / 3.7) + (2.51 / (R * Math.sqrt(f_guess))));
+			f_final = Math.pow((1 / A), 2);
+		  } else {
+			break;
+		  }
+		  iter++;
+		}
+		if (iter == 100) {
+		  return "Not converged"
+		} else {
+		  return f_final;
+		}
+	  }
+	}
+	}
+</script>
+<table align="center">
+<tbody>
+<tr>
+<td align="right">Reynold's number (Re):</td>
+<td><input name="ReynoldsNum" type="text" /></td>
+</tr>
+<tr>
+<td align="right">Relative Roughness:</td>
+<td><input name="RR" type="text" /></td>
+</tr>
+<tr align="center">
+<td colspan="2"><input type="button" value="Calculate" onclick="javascript:calculate_f();"/></td>
+</tr>
+<tr>
+<td align="right">Friction Factor:</td>
+<td><input name="ff" readonly="readonly" type="text" /></td>
+</tr>
+</tbody>
+</table>
+</form>The calculator uses an iterative procedure to solve the Colebrook equation for computing friction factor $f$ when flows are <em>fully turbulent</em>, i.e. $Re \geq 4000$:
+[latexpage]
+<p style="text-align: center;">$\frac{1}{\sqrt[]{f}} = -2.0 log( \frac{\epsilon}{3.7D} + \frac{2.51}{Re\sqrt[]{f}})$</p>
+where, $f$ is the <em>friction factor</em>, $\frac{\epsilon}{D}$ is the <em>relative roughness</em>, and $Re$ is the <em>Reynold's number</em>.
+When the flow is <em>Laminar</em>, i.e. $Re < 2300$, the friction factor is given by:
+<p style="text-align: center;">$f=\frac{64}/{Re}$</p>
+For <em>transition flows</em>, i.e. $ 2300 \leq Re < 4000$
+If you use this calculator for your school or academic work, I encourage you to cite this tool as follows:
+Mallya, Ganeshchandra. “Moody's Friction Factor Calculator.” Towards Open Science, 03/31/2018, www.gmallya.com/moodys-friction-factor-calculator.
+
+The tool is released under MIT license, i.e. the tool is provided "AS IS", without warranty of any kind. If you have suggestions for improvement to the tool or the write-up leave a comment and I will get back to you at the earliest.
